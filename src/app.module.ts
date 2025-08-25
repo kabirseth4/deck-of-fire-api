@@ -1,8 +1,11 @@
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
+import { Deck } from '@/decks/decks.entity';
+import { DecksModule } from '@/decks/decks.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -14,12 +17,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [],
-      synchronize: true,
+      synchronize: process.env.NODE_ENV === 'development',
       autoLoadEntities: true,
     }),
+    DecksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}
